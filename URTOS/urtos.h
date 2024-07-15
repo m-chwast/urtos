@@ -4,4 +4,7 @@
 #include "Memory/urtos_memory.h"
 
 
+void URTOS_Init(void);
+
+
 #endif
