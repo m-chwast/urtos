@@ -1,0 +1,8 @@
+#ifndef URTOS_CONFIG_H_
+#define URTOS_CONFIG_H_
+
+
+#define URTOS_CONFIG_MEMORY_ALLOCATED_SIZE			1000
+
+
+#endif
