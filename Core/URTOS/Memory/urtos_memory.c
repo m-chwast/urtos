@@ -12,9 +12,3 @@ typedef struct {
 static uint16_t firstBlockIndex;
 
 static uint8_t memory[URTOS_CONFIG_MEMORY_ALLOCATED_SIZE];
-
-
-void URTOS_Memory_Init(void) {
-
-}
-
