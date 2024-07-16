@@ -3,42 +3,34 @@
 #include "urtos_config.h"
 
 
-#define MEMORY_BLOCK_EMPTY_ADDR		0xFFFF
-
-
 typedef struct URTOS_Memory_BlockHeader {
 	uint16_t blockSize;
-	uint16_t nextBlockIndex;
+	struct URTOS_Memory_BlockHeader* nextBlock;
 } BlockHeader;
 
 typedef struct {
-	uint16_t lastBlock;
-	uint16_t freeSpace;
+	BlockHeader* lastBlock;
+	BlockHeader* freeSpace;
 } BlockAllocator;
 
 
-static uint16_t firstBlockIndex;
+static BlockHeader* firstBlock = NULL;
 
 static uint8_t memory[URTOS_CONFIG_MEMORY_ALLOCATED_SIZE];
 
 
-static inline uint16_t GetNextMemoryBlock(uint16_t previousBlock) {
-	BlockHeader* prev = (BlockHeader*)&memory[previousBlock];
-	uint16_t nextBlock = prev->nextBlockIndex;
+static inline BlockHeader* GetNextMemoryBlock(BlockHeader* previousBlock) {
+	BlockHeader* nextBlock = previousBlock->nextBlock;
 	return nextBlock;
 }
 
-static inline BlockHeader* GetBlockHeader(uint16_t blockAddr) {
-	return (BlockHeader*)&memory[blockAddr];
-}
-
-static BlockAllocator GetNextFreeSpace(uint16_t startBlock, uint16_t space) {
+static BlockAllocator GetNextFreeSpace(const BlockHeader* startBlock, uint16_t space) {
 	// TODO
-	uint16_t freeSpaceAddr = MEMORY_BLOCK_EMPTY_ADDR;
-	uint16_t currentBlock = startBlock;
-	uint16_t lastBlock = startBlock;
+	BlockHeader* freeSpaceAddr = NULL;
+	BlockHeader* currentBlock = startBlock;
+	BlockHeader* lastBlock = startBlock;
 
-	while(currentBlock != MEMORY_BLOCK_EMPTY_ADDR) {
+	while(currentBlock != NULL) {
 
 	}
 
@@ -55,23 +47,21 @@ void* URTOS_Memory_Allocate(uint16_t bytesToAllocate) {
 		return NULL;
 	}
 
-	BlockAllocator blockAllocator = GetNextFreeSpace(firstBlockIndex, bytesToAllocate);
+	BlockAllocator blockAllocator = GetNextFreeSpace(firstBlock, bytesToAllocate);
+	BlockHeader* freeSpaceBlock = blockAllocator.freeSpace;
+	BlockHeader* lastBlock = blockAllocator.lastBlock;
 
 	// allocation failure
-	if(blockAllocator.freeSpace == MEMORY_BLOCK_EMPTY_ADDR) {
+	if(freeSpaceBlock == NULL) {
 		return NULL;
 	}
 
-	const uint16_t freeSpaceAddr = blockAllocator.freeSpace;
+	BlockHeader* nextBlock = lastBlock->nextBlock;
+	lastBlock->nextBlock = freeSpaceBlock;
 
-	BlockHeader* lastHeader = GetBlockHeader(blockAllocator.lastBlock);
-	uint16_t nextBlock = lastHeader->nextBlockIndex;
-	lastHeader->nextBlockIndex = freeSpaceAddr;
+	freeSpaceBlock->blockSize = bytesToAllocate;
+	freeSpaceBlock->nextBlock= nextBlock;
 
-	BlockHeader* currentHeader = GetBlockHeader(freeSpaceAddr);
-	currentHeader->blockSize = bytesToAllocate;
-	currentHeader->nextBlockIndex = nextBlock;
-
-	void* result = currentHeader + sizeof(BlockHeader);
+	void* result = freeSpaceBlock + sizeof(BlockHeader);
 	return result;
 }

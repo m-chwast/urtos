@@ -80,6 +80,8 @@ int main(void)
 
   /* USER CODE BEGIN Init */
   URTOS_Init();
+  URTOS_Allocate(5);
+  URTOS_Allocate(1);
   /* USER CODE END Init */
 
   /* Configure the system clock */
