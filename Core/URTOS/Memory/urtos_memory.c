@@ -1,4 +1,5 @@
 #include <stddef.h>
+#include <string.h>
 #include "urtos_memory.h"
 #include "urtos_config.h"
 
@@ -30,6 +31,14 @@ static BlockAllocator GetNextFreeSpace(const BlockHeader* startBlock, uint16_t s
 	BlockHeader* currentBlock = startBlock;
 	BlockHeader* lastBlock = startBlock;
 
+	if(currentBlock == NULL) {
+		firstBlock = (BlockHeader*)&memory[0];
+		memset(firstBlock, 0, sizeof(BlockHeader));
+		freeSpaceAddr = firstBlock;
+		lastBlock = firstBlock;
+		currentBlock = NULL;
+	}
+
 	while(currentBlock != NULL) {
 
 	}
@@ -42,7 +51,6 @@ static BlockAllocator GetNextFreeSpace(const BlockHeader* startBlock, uint16_t s
 }
 
 void* URTOS_Memory_Allocate(uint16_t bytesToAllocate) {
-	// TODO handling first block
 	if(bytesToAllocate == 0) {
 		return NULL;
 	}
