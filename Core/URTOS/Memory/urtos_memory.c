@@ -59,8 +59,9 @@ static const BlockHeader* GetClosestRightBlock(const BlockHeader* const block) {
 
 static bool IsSpaceAvailableBetweenAddresses(uint32_t a, uint32_t b, uint32_t space) {
 	assert(a <= b);
-	// empty space must fit block header, required space and must be multiple of 4 bytes (pointer size)
-	const uint32_t requiredSpace = sizeof(BlockHeader) + space + (space % sizeof(BlockHeader*));
+	assert(space % sizeof(void*) == 0);
+
+	const uint32_t requiredSpace = sizeof(BlockHeader) + space;
 	const uint32_t spaceBetween = b - a;
 
 	assert(requiredSpace % sizeof(void*) == 0);
