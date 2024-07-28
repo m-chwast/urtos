@@ -58,14 +58,11 @@ static const BlockHeader* GetClosestRightBlock(const BlockHeader* const block) {
 	return closestRightBlock;
 }
 
-// checks if there's enough free space between blocks for allocation
-static bool IsSpaceAvailable(const BlockHeader* a, const BlockHeader* b, uint16_t space) {
+static bool IsSpaceAvailableBetweenAddresses(uint32_t a, uint32_t b, uint32_t space) {
 	assert(a <= b);
-
 	// empty space must fit block header, required space and must be multiple of 4 bytes (pointer size)
 	const uint32_t requiredSpace = sizeof(BlockHeader) + space + (space % sizeof(BlockHeader*));
-	const void* firstUnallocatedMemory = (void*)((uint32_t)b + sizeof(*b) + b->blockSize);
-	const uint32_t spaceBetween = (uint32_t)firstUnallocatedMemory - (uint32_t)a;
+	const uint32_t spaceBetween = b - a;
 
 	assert(requiredSpace % sizeof(void*) == 0);
 	assert(spaceBetween % sizeof(void*) == 0);
@@ -74,6 +71,35 @@ static bool IsSpaceAvailable(const BlockHeader* a, const BlockHeader* b, uint16_
 		return true;
 	}
 	return false;
+}
+
+// checks if there's enough free space between blocks for allocation
+static bool IsSpaceAvailable(const BlockHeader* a, const BlockHeader* b, uint16_t space) {
+	assert(a <= b);
+
+	const void* firstUnallocatedMemory = (void*)((uint32_t)a + sizeof(*a) + a->blockSize);
+
+	bool isSpaceAvailable = IsSpaceAvailableBetweenAddresses((uint32_t)firstUnallocatedMemory, (uint32_t)b, space);
+	return isSpaceAvailable;
+}
+
+static BlockHeader* TryFindFreeSpaceOnLeftBorder(uint32_t space) {
+	const BlockHeader* currentBlock = firstBlock;
+	const BlockHeader* leftmostBlock = currentBlock;
+	while(currentBlock != NULL) {
+		if(currentBlock < leftmostBlock) {
+			leftmostBlock = currentBlock;
+		}
+		currentBlock = currentBlock->nextBlock;
+	}
+
+	BlockHeader* leftMemoryBorder = (BlockHeader*)&memory[0];
+	bool spaceAvailable = IsSpaceAvailableBetweenAddresses((uint32_t)leftMemoryBorder, (uint32_t)leftmostBlock, space);
+
+	if(spaceAvailable == false) {
+		return NULL;
+	}
+	return leftMemoryBorder;
 }
 
 static BlockHeader* GetNextFreeSpace(const BlockHeader* startBlock, uint16_t space) {
@@ -98,6 +124,10 @@ static BlockHeader* GetNextFreeSpace(const BlockHeader* startBlock, uint16_t spa
 			break;
 		}
 		currentBlock = currentBlock->nextBlock;
+	}
+
+	if(freeSpaceAddr == NULL) {
+		freeSpaceAddr = TryFindFreeSpaceOnLeftBorder(space);
 	}
 
 	return freeSpaceAddr;
