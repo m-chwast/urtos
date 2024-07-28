@@ -87,10 +87,9 @@ static bool IsSpaceAvailable(const BlockHeader* a, const BlockHeader* b, uint16_
 }
 
 static BlockAllocator GetNextFreeSpace(const BlockHeader* startBlock, uint16_t space) {
-	// TODO
 	BlockHeader* freeSpaceAddr = NULL;
-	const BlockHeader* currentBlock = startBlock;
-	BlockHeader* lastBlock = NULL;
+	BlockHeader* currentBlock = startBlock;
+	BlockHeader* lastBlock = NULL;	// last element in the allocation list
 
 	if(currentBlock == NULL) {
 		firstBlock = (BlockHeader*)&memory[0];
@@ -100,10 +99,23 @@ static BlockAllocator GetNextFreeSpace(const BlockHeader* startBlock, uint16_t s
 		currentBlock = NULL;
 	}
 
+	// iterate over all blocks until the space is found
 	while(currentBlock != NULL) {
 		const BlockHeader* closestRightBlock = GetClosestRightBlock(currentBlock);
 		bool spaceAvailable = IsSpaceAvailable(currentBlock, closestRightBlock, space);
+		if(spaceAvailable == true) {
+			// free space found at the end of current block
+			freeSpaceAddr = (BlockHeader*)((uint32_t)currentBlock + sizeof(BlockHeader) + currentBlock->blockSize);
+			assert((uint32_t)freeSpaceAddr % sizeof(BlockHeader*) == 0);
 
+			lastBlock = currentBlock;
+			while(lastBlock->nextBlock != NULL) {
+				lastBlock = lastBlock->nextBlock;
+			}
+
+			break;
+		}
+		currentBlock = currentBlock->nextBlock;
 	}
 
 	BlockAllocator allocator = {
