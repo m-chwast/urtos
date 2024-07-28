@@ -137,7 +137,7 @@ void* URTOS_Memory_Allocate(uint32_t bytesToAllocate) {
 		return NULL;
 	}
 	if(bytesToAllocate % sizeof(void*)) {
-		bytesToAllocate += (bytesToAllocate % sizeof(void*));
+		bytesToAllocate += sizeof(void*) - (bytesToAllocate % sizeof(void*));
 	}
 
 	BlockHeader* freeSpaceBlock = GetNextFreeSpace(firstBlock, bytesToAllocate);
@@ -159,6 +159,6 @@ void* URTOS_Memory_Allocate(uint32_t bytesToAllocate) {
 
 	freeSpaceBlock->blockSize = bytesToAllocate;
 
-	void* result = freeSpaceBlock + sizeof(BlockHeader);
+	void* result = freeSpaceBlock + 1;
 	return result;
 }
