@@ -40,7 +40,7 @@ static const BlockHeader* GetClosestRightBlock(const BlockHeader* const block) {
 	assert(block != NULL);
 	assert(firstBlock != NULL);
 
-	const BlockHeader* closestRightBlock = (const BlockHeader*)&memory[URTOS_CONFIG_MEMORY_ALLOCATED_SIZE - 1];
+	const BlockHeader* closestRightBlock = (const BlockHeader*)&memory[URTOS_CONFIG_MEMORY_ALLOCATED_SIZE];
 
 	// we will iterate over all blocks
 	const BlockHeader* currentBlock = firstBlock;
