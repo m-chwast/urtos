@@ -4,7 +4,6 @@
 #include "urtos_memory.h"
 #include "urtos_config.h"
 
-
 typedef struct URTOS_Memory_BlockHeader {
 	uint32_t blockSize;
 	struct URTOS_Memory_BlockHeader* nextBlock;
