@@ -47,11 +47,32 @@ static inline BlockHeader* GetNextMemoryBlock(BlockHeader* previousBlock) {
  *
  */
 
+static const BlockHeader* GetClosestRightBlock(const BlockHeader* const block) {
+	assert(block != NULL);
+	assert(firstBlock != NULL);
+
+	const BlockHeader* closestRightBlock = block;	//assign start block - space between blocks will be 0, so it's safe choice
+
+	// we will iterate over all blocks
+	const BlockHeader* currentBlock = firstBlock;
+	while(currentBlock != NULL) {
+		if(currentBlock > block) {
+			// current block is on the right, now check if it's the closest
+			if(currentBlock < closestRightBlock) {
+				closestRightBlock = currentBlock;
+			}
+		}
+		currentBlock = currentBlock->nextBlock;
+	}
+
+	return closestRightBlock;
+}
+
 static BlockAllocator GetNextFreeSpace(const BlockHeader* startBlock, uint16_t space) {
 	// TODO
 	BlockHeader* freeSpaceAddr = NULL;
-	BlockHeader* currentBlock = startBlock;
-	BlockHeader* lastBlock = startBlock;
+	const BlockHeader* currentBlock = startBlock;
+	BlockHeader* lastBlock = NULL;
 
 	if(currentBlock == NULL) {
 		firstBlock = (BlockHeader*)&memory[0];
@@ -62,7 +83,7 @@ static BlockAllocator GetNextFreeSpace(const BlockHeader* startBlock, uint16_t s
 	}
 
 	while(currentBlock != NULL) {
-
+		const BlockHeader* closestRightBlock = GetClosestRightBlock(currentBlock);
 	}
 
 	BlockAllocator allocator = {
