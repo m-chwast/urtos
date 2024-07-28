@@ -75,7 +75,8 @@ static bool IsSpaceAvailable(const BlockHeader* a, const BlockHeader* b, uint16_
 
 	// empty space must fit block header, required space and must be multiple of 4 bytes (pointer size)
 	const uint32_t requiredSpace = sizeof(BlockHeader) + space + (space % sizeof(BlockHeader*));
-	const uint32_t spaceBetween = (uint32_t)b - (uint32_t)a;
+	const void* firstUnallocatedMemory = (void*)((uint32_t)b + sizeof(*b) + b->blockSize);
+	const uint32_t spaceBetween = (uint32_t)firstUnallocatedMemory - (uint32_t)a;
 
 	assert(requiredSpace % sizeof(void*) == 0);
 	assert(spaceBetween % sizeof(void*) == 0);
