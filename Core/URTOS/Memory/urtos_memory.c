@@ -15,12 +15,6 @@ static BlockHeader* firstBlock = NULL;
 
 static uint8_t memory[URTOS_CONFIG_MEMORY_ALLOCATED_SIZE];
 
-
-static inline BlockHeader* GetNextMemoryBlock(BlockHeader* previousBlock) {
-	BlockHeader* nextBlock = previousBlock->nextBlock;
-	return nextBlock;
-}
-
 /*
  * Free space search algorithm:
  *
