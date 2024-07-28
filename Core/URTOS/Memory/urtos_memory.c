@@ -1,4 +1,5 @@
 #include <stddef.h>
+#include <stdbool.h>
 #include <string.h>
 #include "urtos_memory.h"
 #include "urtos_config.h"
@@ -68,6 +69,23 @@ static const BlockHeader* GetClosestRightBlock(const BlockHeader* const block) {
 	return closestRightBlock;
 }
 
+// checks if there's enough free space between blocks for allocation
+static bool IsSpaceAvailable(const BlockHeader* a, const BlockHeader* b, uint16_t space) {
+	assert(a <= b);
+
+	// empty space must fit block header, required space and must be multiple of 4 bytes (pointer size)
+	const uint32_t requiredSpace = sizeof(BlockHeader) + space + (space % sizeof(BlockHeader*));
+	const uint32_t spaceBetween = (uint32_t)b - (uint32_t)a;
+
+	assert(requiredSpace % sizeof(void*) == 0);
+	assert(spaceBetween % sizeof(void*) == 0);
+
+	if(spaceBetween >= requiredSpace) {
+		return true;
+	}
+	return false;
+}
+
 static BlockAllocator GetNextFreeSpace(const BlockHeader* startBlock, uint16_t space) {
 	// TODO
 	BlockHeader* freeSpaceAddr = NULL;
@@ -84,6 +102,8 @@ static BlockAllocator GetNextFreeSpace(const BlockHeader* startBlock, uint16_t s
 
 	while(currentBlock != NULL) {
 		const BlockHeader* closestRightBlock = GetClosestRightBlock(currentBlock);
+		bool spaceAvailable = IsSpaceAvailable(currentBlock, closestRightBlock, space);
+
 	}
 
 	BlockAllocator allocator = {
