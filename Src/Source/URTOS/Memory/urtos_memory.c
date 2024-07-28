@@ -3,7 +3,7 @@
 #include <string.h>
 #include <assert.h>
 #include "urtos_memory.h"
-#include "urtos_config.h"
+#include "../urtos_config.h"
 
 typedef struct URTOS_Memory_BlockHeader {
 	uint32_t blockSize;
