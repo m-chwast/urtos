@@ -10,11 +10,6 @@ typedef struct URTOS_Memory_BlockHeader {
 	struct URTOS_Memory_BlockHeader* nextBlock;
 } BlockHeader;
 
-typedef struct {
-	BlockHeader* lastBlock;
-	BlockHeader* freeSpace;
-} BlockAllocator;
-
 
 static BlockHeader* firstBlock = NULL;
 
@@ -87,16 +82,14 @@ static bool IsSpaceAvailable(const BlockHeader* a, const BlockHeader* b, uint16_
 	return false;
 }
 
-static BlockAllocator GetNextFreeSpace(const BlockHeader* startBlock, uint16_t space) {
+static BlockHeader* GetNextFreeSpace(const BlockHeader* startBlock, uint16_t space) {
 	BlockHeader* freeSpaceAddr = NULL;
-	BlockHeader* currentBlock = startBlock;
-	BlockHeader* lastBlock = NULL;	// last element in the allocation list
+	const BlockHeader* currentBlock = startBlock;
 
 	if(currentBlock == NULL) {
 		firstBlock = (BlockHeader*)&memory[0];
 		memset(firstBlock, 0, sizeof(BlockHeader));
 		freeSpaceAddr = firstBlock;
-		lastBlock = firstBlock;
 		currentBlock = NULL;
 	}
 
@@ -108,22 +101,12 @@ static BlockAllocator GetNextFreeSpace(const BlockHeader* startBlock, uint16_t s
 			// free space found at the end of current block
 			freeSpaceAddr = (BlockHeader*)((uint32_t)currentBlock + sizeof(BlockHeader) + currentBlock->blockSize);
 			assert((uint32_t)freeSpaceAddr % sizeof(BlockHeader*) == 0);
-
-			lastBlock = currentBlock;
-			while(lastBlock->nextBlock != NULL) {
-				lastBlock = lastBlock->nextBlock;
-			}
-
 			break;
 		}
 		currentBlock = currentBlock->nextBlock;
 	}
 
-	BlockAllocator allocator = {
-			.freeSpace = freeSpaceAddr,
-			.lastBlock = lastBlock,
-	};
-	return allocator;
+	return freeSpaceAddr;
 }
 
 void* URTOS_Memory_Allocate(uint16_t bytesToAllocate) {
@@ -131,14 +114,18 @@ void* URTOS_Memory_Allocate(uint16_t bytesToAllocate) {
 		return NULL;
 	}
 
-	BlockAllocator blockAllocator = GetNextFreeSpace(firstBlock, bytesToAllocate);
-	BlockHeader* freeSpaceBlock = blockAllocator.freeSpace;
-	BlockHeader* lastBlock = blockAllocator.lastBlock;
+	BlockHeader* freeSpaceBlock = GetNextFreeSpace(firstBlock, bytesToAllocate);
 
 	// allocation failure
 	if(freeSpaceBlock == NULL) {
 		return NULL;
 	}
+
+	BlockHeader* lastBlock = firstBlock;
+	while(lastBlock->nextBlock != NULL) {
+		lastBlock = lastBlock->nextBlock;
+	}
+
 
 	BlockHeader* nextBlock = lastBlock->nextBlock;
 	lastBlock->nextBlock = freeSpaceBlock;
