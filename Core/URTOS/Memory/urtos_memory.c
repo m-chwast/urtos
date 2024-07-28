@@ -153,7 +153,7 @@ void* URTOS_Memory_Allocate(uint32_t bytesToAllocate) {
 		lastBlock = lastBlock->nextBlock;
 	}
 
-	if(lastBlock != firstBlock) {
+	if(lastBlock != freeSpaceBlock) {
 		// check needed for first allocation
 		lastBlock->nextBlock = freeSpaceBlock;
 	}
