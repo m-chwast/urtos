@@ -6,7 +6,7 @@
 
 
 typedef struct URTOS_Memory_BlockHeader {
-	uint16_t blockSize;
+	uint32_t blockSize;
 	struct URTOS_Memory_BlockHeader* nextBlock;
 } BlockHeader;
 
@@ -74,7 +74,7 @@ static bool IsSpaceAvailableBetweenAddresses(uint32_t a, uint32_t b, uint32_t sp
 }
 
 // checks if there's enough free space between blocks for allocation
-static bool IsSpaceAvailable(const BlockHeader* a, const BlockHeader* b, uint16_t space) {
+static bool IsSpaceAvailable(const BlockHeader* a, const BlockHeader* b, uint32_t space) {
 	assert(a <= b);
 
 	const void* firstUnallocatedMemory = (void*)((uint32_t)a + sizeof(*a) + a->blockSize);
@@ -102,7 +102,7 @@ static BlockHeader* TryFindFreeSpaceOnLeftBorder(uint32_t space) {
 	return leftMemoryBorder;
 }
 
-static BlockHeader* GetNextFreeSpace(const BlockHeader* startBlock, uint16_t space) {
+static BlockHeader* GetNextFreeSpace(const BlockHeader* startBlock, uint32_t space) {
 	BlockHeader* freeSpaceAddr = NULL;
 	const BlockHeader* currentBlock = startBlock;
 
@@ -133,7 +133,7 @@ static BlockHeader* GetNextFreeSpace(const BlockHeader* startBlock, uint16_t spa
 	return freeSpaceAddr;
 }
 
-void* URTOS_Memory_Allocate(uint16_t bytesToAllocate) {
+void* URTOS_Memory_Allocate(uint32_t bytesToAllocate) {
 	if(bytesToAllocate == 0) {
 		return NULL;
 	}

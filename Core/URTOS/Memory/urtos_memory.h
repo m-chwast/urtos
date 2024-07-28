@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 
-void* URTOS_Memory_Allocate(uint16_t bytesToAllocate);
+void* URTOS_Memory_Allocate(uint32_t bytesToAllocate);
 
 
 #endif
