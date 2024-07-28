@@ -1,6 +1,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <string.h>
+#include <assert.h>
 #include "urtos_memory.h"
 #include "urtos_config.h"
 
