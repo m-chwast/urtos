@@ -16,3 +16,10 @@ class MemoryAllocateTests : public testing::Test {
 TEST_F(MemoryAllocateTests, BlockHeaderTakesTwoBytes) {
 	EXPECT_EQ(sizeof(BlockHeader), 8);
 }
+
+TEST_F(MemoryAllocateTests, AllocatingTooLargeBlockAtStartupFails) {
+	void* res = URTOS_Memory_Allocate(URTOS_CONFIG_MEMORY_ALLOCATED_SIZE);
+
+	EXPECT_EQ(res, nullptr);
+	EXPECT_EQ(firstBlock, nullptr);
+}
