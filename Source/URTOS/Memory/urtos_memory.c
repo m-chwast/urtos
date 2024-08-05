@@ -3,17 +3,8 @@
 #include <string.h>
 #include <assert.h>
 #include "urtos_memory.h"
-#include "../urtos_config.h"
+#include "urtos_memory_storage.h"
 
-typedef struct URTOS_Memory_BlockHeader {
-	uint32_t blockSize;
-	struct URTOS_Memory_BlockHeader* nextBlock;
-} BlockHeader;
-
-
-static BlockHeader* firstBlock = NULL;
-
-static uint8_t memory[URTOS_CONFIG_MEMORY_ALLOCATED_SIZE];
 
 /*
  * Free space search algorithm:
