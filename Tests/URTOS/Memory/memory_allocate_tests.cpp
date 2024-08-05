@@ -86,3 +86,20 @@ TEST_F(MemoryAllocateTests, MultipleAllocationWorks) {
 	EXPECT_EQ(res4, &memory[52]);
 }
 
+TEST_F(MemoryAllocateTests, FullMemoryCanBeAllocated) {
+	void* res1 = URTOS_Memory_Allocate(4);	// takes 12b
+	void* res2 = URTOS_Memory_Allocate(URTOS_CONFIG_MEMORY_ALLOCATED_SIZE - 8 - 12);	// takes the rest
+
+
+	EXPECT_NE(res1, nullptr);
+	EXPECT_NE(res2, nullptr);
+}
+
+TEST_F(MemoryAllocateTests, FullMemoryAllocationFails) {
+	void* res1 = URTOS_Memory_Allocate(URTOS_CONFIG_MEMORY_ALLOCATED_SIZE - 8);
+	void* res2 = URTOS_Memory_Allocate(1);
+
+	EXPECT_EQ(res1, &memory[8]);
+	EXPECT_EQ(res2, nullptr);
+}
+
