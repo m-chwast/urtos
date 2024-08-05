@@ -99,6 +99,9 @@ static BlockHeader* GetNextFreeSpace(const BlockHeader* startBlock, uint32_t spa
 	const BlockHeader* currentBlock = startBlock;
 
 	if(currentBlock == NULL) {
+		if(space > URTOS_CONFIG_MEMORY_ALLOCATED_SIZE - sizeof(BlockHeader)) {
+			return NULL;
+		}
 		firstBlock = (BlockHeader*)&memory[0];
 		memset(firstBlock, 0, sizeof(BlockHeader));
 		freeSpaceAddr = firstBlock;
