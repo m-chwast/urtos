@@ -59,3 +59,17 @@ TEST_F(MemoryAllocateTests, AllocationOfNon4MultipleExtendsSize3) {
 	EXPECT_NE(firstBlock, nullptr);
 	EXPECT_EQ(firstBlock->blockSize, 12);
 }
+
+TEST_F(MemoryAllocateTests, DualAllocationWorksWithCorrectValues) {
+	void* res1 = URTOS_Memory_Allocate(10);
+	void* res2 = URTOS_Memory_Allocate(7);
+
+	EXPECT_EQ(firstBlock->blockSize, 12);
+
+	BlockHeader* next = firstBlock->nextBlock;
+	EXPECT_EQ((uint8_t*)next, &memory[20]);
+	EXPECT_EQ(next->blockSize, 8);
+
+	EXPECT_EQ(res1, &memory[8]);
+	EXPECT_EQ(res2, &memory[28]);
+}
