@@ -103,3 +103,15 @@ TEST_F(MemoryAllocateTests, FullMemoryAllocationFails) {
 	EXPECT_EQ(res2, nullptr);
 }
 
+TEST_F(MemoryAllocateTests, ZeroSizeAllocationFails) {
+	void* res = URTOS_Memory_Allocate(0);
+
+	EXPECT_EQ(res, nullptr);
+}
+
+TEST_F(MemoryAllocateTests, ZeroSizeAllocationFails2) {
+	URTOS_Memory_Allocate(1);
+	void* res = URTOS_Memory_Allocate(0);
+
+	EXPECT_EQ(res, nullptr);
+}
