@@ -73,3 +73,16 @@ TEST_F(MemoryAllocateTests, DualAllocationWorksWithCorrectValues) {
 	EXPECT_EQ(res1, &memory[8]);
 	EXPECT_EQ(res2, &memory[28]);
 }
+
+TEST_F(MemoryAllocateTests, MultipleAllocationWorks) {
+	void* res1 = URTOS_Memory_Allocate(4);
+	void* res2 = URTOS_Memory_Allocate(5);
+	void* res3 = URTOS_Memory_Allocate(6);
+	void* res4 = URTOS_Memory_Allocate(7);
+
+	EXPECT_EQ(res1, &memory[8]);
+	EXPECT_EQ(res2, &memory[20]);
+	EXPECT_EQ(res3, &memory[36]);
+	EXPECT_EQ(res4, &memory[52]);
+}
+
