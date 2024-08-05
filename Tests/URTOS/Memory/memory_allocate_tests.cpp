@@ -18,10 +18,16 @@ TEST_F(MemoryAllocateTests, BlockHeaderTakesTwoBytes) {
 }
 
 TEST_F(MemoryAllocateTests, AllocatingTooLargeBlockAtStartupFails) {
-	void* res = URTOS_Memory_Allocate(URTOS_CONFIG_MEMORY_ALLOCATED_SIZE);
+	void* res = URTOS_Memory_Allocate(URTOS_CONFIG_MEMORY_ALLOCATED_SIZE - 7);
 
 	EXPECT_EQ(res, nullptr);
 	EXPECT_EQ(firstBlock, nullptr);
+}
+
+TEST_F(MemoryAllocateTests, AllocatingMaxBlockWorks) {
+	void* res = URTOS_Memory_Allocate(URTOS_CONFIG_MEMORY_ALLOCATED_SIZE - 8);
+
+	EXPECT_EQ(res, &memory[8]);
 }
 
 TEST_F(MemoryAllocateTests, FirstAllocationWorks) {
