@@ -22,6 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "URTOS/urtos.h"
 
 /* USER CODE END Includes */
 
@@ -78,8 +79,12 @@ int main(void)
   NVIC_SetPriority(SysTick_IRQn, 3);
 
   /* USER CODE BEGIN Init */
-
-  /* USER CODE END Init */
+  URTOS_Init();
+  char* s1 = URTOS_Allocate(5);
+  char* s3 = URTOS_Allocate(20);
+  char* s2 = URTOS_Allocate(1);
+  char* s4 = URTOS_Allocate(100);
+    /* USER CODE END Init */
 
   /* Configure the system clock */
   SystemClock_Config();
