@@ -107,3 +107,21 @@ TEST_F(MemoryFreeTests, SecondMemoryBlockFreeLeavesFirstBlockUnchanged) {
 
 	EXPECT_EQ(firstBlock, expectedFirstBlock);
 }
+
+TEST_F(MemoryFreeTests, FreeClearsThirdAllocatedBlock) {
+	URTOS_Memory_Allocate(16);
+	URTOS_Memory_Allocate(4);
+	void* block = URTOS_Memory_Allocate(8);
+	memset(block, 0xAB, 8);
+
+	auto expectedMemory = GetMemoryCopy();
+	for(unsigned i = 0; i < sizeof(BlockHeader) + 8; i++) {
+		// zero only the 2nd block (starting at address 12)
+		expectedMemory[sizeof(BlockHeader) * 2 + (16 + 4) + i] = 0;
+	}
+
+	URTOS_Memory_Free(block);
+
+	auto currentMemory = GetMemoryCopy();
+	EXPECT_EQ(currentMemory, expectedMemory);
+}

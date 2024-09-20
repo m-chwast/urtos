@@ -168,6 +168,7 @@ void URTOS_Memory_Free(void* allocatedBlock) {
 		firstBlock = NULL;
 		return;
 	}
-	BlockHeader* nextHeader = firstBlock->nextBlock;
-	memset(nextHeader, 0, sizeof(BlockHeader) + nextHeader->blockSize);
+
+	BlockHeader* headerToClear = ((BlockHeader*)allocatedBlock) - 1;
+	memset(headerToClear, 0, sizeof(BlockHeader) + headerToClear->blockSize);
 }
