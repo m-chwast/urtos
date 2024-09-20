@@ -58,6 +58,24 @@ TEST_F(MemoryFreeTests, FreeClearsMemoryOfFirstAllocatedBlock) {
 	URTOS_Memory_Free(block);
 
 	auto currentMemory = GetMemoryCopy();
-
 	EXPECT_EQ(currentMemory, expectedMemory);
 }
+
+TEST_F(MemoryFreeTests, FreeClearsMemoryOfFirstBigAllocatedBlock) {
+	// allocate 2 blocks
+	void* block = URTOS_Memory_Allocate(100);
+	URTOS_Memory_Allocate(1);
+	memset(block, 0xAB, 100);
+
+	// clear first block
+	auto expectedMemory = GetMemoryCopy();
+	for(unsigned i = 0; i < sizeof(BlockHeader) + 100; i++) {
+		expectedMemory[i] = 0;
+	}
+
+	URTOS_Memory_Free(block);
+
+	auto currentMemory = GetMemoryCopy();
+	EXPECT_EQ(currentMemory, expectedMemory);
+}
+
