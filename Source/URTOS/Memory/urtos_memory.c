@@ -169,6 +169,6 @@ void URTOS_Memory_Free(void* allocatedBlock) {
 	}
 	else {
 		memset(memory, 0, sizeof(BlockHeader) + firstBlock->blockSize);
+		firstBlock = NULL;
 	}
-	firstBlock = NULL;
 }

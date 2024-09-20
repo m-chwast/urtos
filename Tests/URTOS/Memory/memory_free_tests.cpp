@@ -97,3 +97,13 @@ TEST_F(MemoryFreeTests, FreeClearsSecondAllocatedBlock) {
 	auto currentMemory = GetMemoryCopy();
 	EXPECT_EQ(currentMemory, expectedMemory);
 }
+
+TEST_F(MemoryFreeTests, SecondMemoryBlockFreeLeavesFirstBlockUnchanged) {
+	URTOS_Memory_Allocate(1);
+	void* block = URTOS_Memory_Allocate(1);
+
+	auto expectedFirstBlock = firstBlock;
+	URTOS_Memory_Free(block);
+
+	EXPECT_EQ(firstBlock, expectedFirstBlock);
+}
