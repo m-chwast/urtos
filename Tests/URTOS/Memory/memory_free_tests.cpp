@@ -35,3 +35,9 @@ TEST_F(MemoryFreeTests, DoesNothingOnNullPointer) {
 	EXPECT_EQ(initialFirstBlock, firstBlock);
 	EXPECT_EQ(initialMemory, currentMemory);
 }
+
+TEST_F(MemoryFreeTests, FreesOnlyAllocatedBlock) {
+	void* block = URTOS_Memory_Allocate(1);
+	URTOS_Memory_Free(block);
+	EXPECT_EQ(firstBlock, nullptr);
+}
