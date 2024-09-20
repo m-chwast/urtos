@@ -158,3 +158,7 @@ void* URTOS_Memory_Allocate(uint32_t bytesToAllocate) {
 	void* result = freeSpaceBlock + 1;
 	return result;
 }
+
+void URTOS_Memory_Free(void* allocatedBlock) {
+
+}

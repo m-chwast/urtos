@@ -6,5 +6,7 @@
 
 void* URTOS_Memory_Allocate(uint32_t bytesToAllocate);
 
+void URTOS_Memory_Free(void* allocatedBlock);
+
 
 #endif
